@@ -17,11 +17,13 @@ Balance View
     </form>
 </div>
 <div id="existing_balances">
-    <ul>
-    {% for balance in balances %}
-        <li>Balance = {{balance.get_balance_string()}}, Bank = {{balance.institution}}</li>
-    {% end %}
-    </ul>
+    <table id="existing_balance_table">
+        <tr>
+            <th>Institution</th>
+            <th>Last Update</th>
+            <th>Balance</th>
+        </tr>
+    </table>
 </div>
 <script type="text/javascript">
     $("form#new_balance_form").submit(function(event){
@@ -36,14 +38,35 @@ Balance View
             url: url,
             data: JSON.stringify($form.serializeArray()),
             contentType: 'application/json',
-            success: (function(data){console.log("--" + data);}),
-            dataType: "application/json"
+            success: function(data){console.log("==" + data); refresh_balances();},
+            error: function(){console.log("Failed to make call");}
         });
     });
 
+    write_balances = function(data){
+        $("table#existing_balance_table").html("<tr><th>Institution</th><th>Last Update</th><th>Balance</th></tr>");
+        for(var i = 0; i < data.result.length; i++){
+            row = data.result[i];
+            $("table#existing_balance_table").append("<tr><td>" + row['institution'] + "</td><td>" +
+                row['last_update'] + "</td><td>" + row['formatted_balance'] + "</td></tr>");
+        }
+    }
+
+    refresh_balances = function(){
+        $.ajax({
+            type: "GET",
+            url: '/balances',
+            contentType: 'application/json',
+            success: function(data){write_balances(data);},
+            error: function(){console.log("Failed to retrieve balances");}
+        });
+    }
+
     $(document).ready(function () {
         console.log("Account Balances Ready");
+        refresh_balances();
     });
+
 
 </script>
 </body>
