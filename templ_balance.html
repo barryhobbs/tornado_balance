@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="{{ static_url('jquery-1.11.3.js') }}"></script>
+    <meta charset="UTF-8">
+    <title>Account Balances</title>
+</head>
+<body>
+Balance View
+<div id="create_new_balances">
+    <form id="new_balance_form" action="/balances" method="post" enctype='application/json'>
+        <label for="institution_field">Institution:</label>
+        <input id="institution_field" type="text" name="institution">
+        <label for="current_balance_field">Current Balance:</label>
+        <input id="current_balance_field" type="text" name="current_balance">
+        <input id="create_balance_button" type="submit" name="create_balance" value="Create">
+    </form>
+</div>
+<div id="existing_balances">
+    <ul>
+    {% for balance in balances %}
+        <li>Balance = {{balance.get_balance_string()}}, Bank = {{balance.institution}}</li>
+    {% end %}
+    </ul>
+</div>
+<script type="text/javascript">
+    $("form#new_balance_form").submit(function(event){
+        console.log("New Balance Form submitted");
+        event.preventDefault();
+        var $form = $(this);
+        var url = $form.attr('action');
+        var institution_name = $form.find("#institution_field").val();
+        var balance_value = $form.find("#current_balance_field").val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify($form.serializeArray()),
+            contentType: 'application/json',
+            success: (function(data){console.log("--" + data);}),
+            dataType: "application/json"
+        });
+    });
+
+    $(document).ready(function () {
+        console.log("Account Balances Ready");
+    });
+
+</script>
+</body>
+</html>
