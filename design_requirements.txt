@@ -1,0 +1,37 @@
+Manage accounts to watch.
+Show and update current balances on transaction accounts(checking/savings).
+Show and update recurring transactions.
+Manage recurring transactions.
+Show projected balances on transaction accounts for a variable length of time, default 90 days.
+Export recurring transactions and current balances to flat file for backup.
+
+User:
+- name
+
+AccountBalance:
+- Institution Association
+- Last updated date
+- Balance
+
+Institution:
+- Name
+- Type: [Checking, Savings, Credit Card, Untracked]
+- user_id
+
+RecurringTransaction:
+- Repetition Schedule
+- From Institution Association
+- To Institution Association
+- Credit or Debit
+- Next Occurrence Date
+- Name
+
+NP-Balance Forecast:
+- Institution Association
+- Collection of all Recurring Transactions for that Institution
+- Collection of Daily Balances
+
+NP-Daily Balance:
+- Date
+- Balance Forecast Association
+- Collection of Transaction Instances(non-persistent RecurringTransaction construct)

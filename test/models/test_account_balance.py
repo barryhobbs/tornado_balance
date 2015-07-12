@@ -28,7 +28,6 @@ class TestAccountBalance(TestCase):
         self.assertEqual("1,500.59", ab.get_balance_string())
 
     def test_account_balance_str(self):
-        ab = AccountBalance(institution="Test Bank", balance=1500.59, last_update=self.now)
-        ab._id = 1
+        ab = AccountBalance(_id=1, institution="Test Bank", balance=1500.59, last_update=self.now)
         self.assertEqual(
             "<AccountBalance: id=1, institution=Test Bank, balance=1,500.59, last_update=2002/12/31,23:59:59>", str(ab))

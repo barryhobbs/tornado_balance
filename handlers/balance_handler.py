@@ -1,8 +1,7 @@
-import json
 import datetime
 import tornado
 import logging
-from tornado import gen
+from handlers.json_web_request_handler import JsonWebRequestHandler
 
 from models.account_balance import AccountBalance
 
@@ -10,22 +9,9 @@ __author__ = 'barryhobbs'
 logger = logging.getLogger("balance")
 
 
-class BalanceHandler(tornado.web.RequestHandler):
-    def prepare(self):
-        content_type = self.request.headers.get("Content-Type")
-        if content_type and content_type.startswith("application/json"):
-            try:
-                self.json_args = json.loads(self.request.body)
-            except ValueError:
-                self.json_args = json.loads('[]')
-                logger.error("Failed to parse json body from %s" % self.request.body)
-            self.produce_json = True
-        else:
-            self.json_args = None
-            self.produce_json = False
-
+class BalanceHandler(JsonWebRequestHandler):
     @tornado.web.asynchronous
-    @gen.coroutine
+    @tornado.gen.coroutine
     def get(self):
         logger.debug("--json=%s-- %s\n%s" % (self.produce_json, self.request.headers, self.request.body))
         db = self.settings['db']
@@ -40,7 +26,7 @@ class BalanceHandler(tornado.web.RequestHandler):
             self.render("templ_balance.html")
 
     @tornado.web.asynchronous
-    @gen.coroutine
+    @tornado.gen.coroutine
     def post(self):
         logger.debug("------ %s\n%s" % (self.request.headers, self.request.body))
         params = self.json_args

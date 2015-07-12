@@ -14,16 +14,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 import logging
+import os
 
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import tornado.web
-import os
-import balance_handler
 import motor
-
 from tornado.options import define, options
+
+from handlers import balance_handler, user_handler, institution_handler
 
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -42,7 +42,9 @@ def main():
     db = motor.MotorClient().balance_database
     application = tornado.web.Application([
         (r"/", MainHandler),
-        (r"/balances", balance_handler.BalanceHandler)
+        (r"/balances", balance_handler.BalanceHandler),
+        (r"/users", user_handler.UserHandler),
+        (r"/institutions", institution_handler.InstitutionHandler)
     ], debug=True, static_path=os.path.join(os.path.dirname(__file__), "static"), db=db)
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)

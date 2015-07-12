@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="{{ static_url('jquery-1.11.3.js') }}"></script>
+    <meta charset="UTF-8">
+    <title>Account Balances</title>
+</head>
+<body>
+Institution View
+<div id="create_new_institution">
+    <form id="new_institution_form" action="/institutions" method="post" enctype='application/json'>
+        <label for="name">Institution:</label>
+        <input id="name" type="text" name="name">
+        <label for="type">Type:</label>
+        <input id="type" type="text" name="type">
+        <input id="create_institution_button" type="submit" name="create_institution" value="Create">
+    </form>
+</div>
+<div id="existing_balances">
+    <table id="existing_balance_table">
+        <tr>
+            <th>Institution</th>
+            <th>Last Update</th>
+            <th>Balance</th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    $("form#new_balance_form").submit(function(event){
+        console.log("New Balance Form submitted");
+        event.preventDefault();
+        var $form = $(this);
+        var url = $form.attr('action');
+        var institution_name = $form.find("#institution_field").val();
+        var balance_value = $form.find("#current_balance_field").val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify($form.serializeArray()),
+            contentType: 'application/json',
+            success: function(data){console.log("==" + data); refresh_balances();},
+            error: function(){console.log("Failed to make call");}
+        });
+    });
+
+    write_balances = function(data){
+        $("table#existing_balance_table").html("<tr><th>Institution</th><th>Last Update</th><th>Balance</th></tr>");
+        for(var i = 0; i < data.result.length; i++){
+            row = data.result[i];
+            $("table#existing_balance_table").append("<tr><td>" + row['institution'] + "</td><td>" +
+                row['last_update'] + "</td><td>" + row['formatted_balance'] + "</td></tr>");
+        }
+    }
+
+    refresh_balances = function(){
+        $.ajax({
+            type: "GET",
+            url: '/balances',
+            contentType: 'application/json',
+            success: function(data){write_balances(data);},
+            error: function(){console.log("Failed to retrieve balances");}
+        });
+    }
+
+    $(document).ready(function () {
+        console.log("Account Balances Ready");
+        refresh_balances();
+    });
+
+
+</script>
+</body>
+</html>

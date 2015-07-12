@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="{{ static_url('jquery-1.11.3.js') }}"></script>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+User View
+<div id="create_new_users">
+    <form id="new_user_form" action="/users" method="post" enctype='application/json'>
+        <label for="name_field">Name:</label>
+        <input id="name_field" type="text" name="name">
+        <input id="create_user_button" type="submit" name="create_user" value="Create">
+    </form>
+</div>
+<div id="existing_users">
+    <table id="existing_user_table">
+        <tr>
+            <th>Name</th>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+    $("form#new_user_form").submit(function(event){
+        console.log("New User Form submitted");
+        event.preventDefault();
+        var $form = $(this);
+        var url = $form.attr('action');
+        var name = $form.find("#name_field").val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: JSON.stringify($form.serializeArray()),
+            contentType: 'application/json',
+            success: function(data){console.log("==" + data); refresh_users();},
+            error: function(){console.log("Failed to make call");}
+        });
+    });
+
+    write_users = function(data){
+        $("table#existing_user_table").html("<tr><th>Name</th></tr>");
+        for(var i = 0; i < data.result.length; i++){
+            row = data.result[i];
+            $("table#existing_user_table").append("<tr><td>" + row['name'] + "</td></tr>");
+        }
+    }
+
+    refresh_users = function(){
+        $.ajax({
+            type: "GET",
+            url: '/users',
+            contentType: 'application/json',
+            success: function(data){write_users(data);},
+            error: function(){console.log("Failed to retrieve users");}
+        });
+    }
+
+    $(document).ready(function () {
+        console.log("Users Ready");
+        refresh_users();
+    });
+
+
+</script>
+</body>
+</html>
