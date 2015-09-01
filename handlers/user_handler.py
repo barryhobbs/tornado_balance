@@ -10,8 +10,9 @@ class UserHandler(JsonWebRequestHandler):
 
     @tornado.web.asynchronous
     @tornado.gen.coroutine
-    def get(self):
-        logger.debug("--json=%s-- %s\n%s" % (self.produce_json, self.request.headers, self.request.body))
+    def get(self, args=None):
+        logger.debug("--json=%s-- %s\n%s\nargs=%s" % (self.produce_json, self.request.headers, self.request.body, args))
+        logger.debug("--request_args" % (self.request.args))
         db = self.settings['db']
         cursor = db.users.find()
         users = []

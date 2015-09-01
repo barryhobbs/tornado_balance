@@ -23,7 +23,7 @@ import tornado.web
 import motor
 from tornado.options import define, options
 
-from handlers import balance_handler, user_handler, institution_handler
+from handlers import balance_handler, user_handler, institution_handler, institution_types_handler
 
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -44,7 +44,8 @@ def main():
         (r"/", MainHandler),
         (r"/balances", balance_handler.BalanceHandler),
         (r"/users", user_handler.UserHandler),
-        (r"/institutions", institution_handler.InstitutionHandler)
+        (r"/institutions", institution_handler.InstitutionHandler),
+        (r"/institution_types", institution_types_handler.InstitutionTypesHandler)
     ], debug=True, static_path=os.path.join(os.path.dirname(__file__), "static"), db=db)
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)
